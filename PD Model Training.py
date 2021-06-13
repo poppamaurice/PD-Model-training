@@ -140,69 +140,6 @@ summary_table
 ## Build a Logistic Regression Model with P-Values
 # P values for sklearn logistic regression.
 
-# Class to display p-values for logistic regression in sklearn.
-
-from sklearn import linear_model
-import scipy.stats as stat
-
-class LogisticRegression_with_p_values:
-    
-    def __init__(self,*args,**kwargs):#,**kwargs):
-        self.model = linear_model.LogisticRegression(*args,**kwargs)#,**args)
-
-    def fit(self,X,y):
-        self.model.fit(X,y)
-        
-        #### Get p-values for the fitted model ####
-        denom = (2.0 * (1.0 + np.cosh(self.model.decision_function(X))))  #cosh=Equivalent to 1/2 * (np.exp(x) + np.exp(-x))
-        denom = np.tile(denom,(X.shape[1],1)).T
-        F_ij = np.dot((X / denom).T,X) ## Fisher Information Matrix
-        Cramer_Rao = np.linalg.inv(F_ij) ## Inverse Information Matrix
-        sigma_estimates = np.sqrt(np.diagonal(Cramer_Rao))
-        z_scores = self.model.coef_[0] / sigma_estimates # z-score for eaach model coefficient
-        p_values = [stat.norm.sf(abs(x)) * 2 for x in z_scores] ### two tailed test for p-values
-        
-        self.coef_ = self.model.coef_
-        self.intercept_ = self.model.intercept_
-        self.p_values = p_values
-        
-reg = LogisticRegression_with_p_values()
-# We create an instance of an object from the newly created 'LogisticRegression_with_p_values()' class.
-
-reg.fit(inputs_train, loan_data_targets_train)
-# Estimates the coefficients of the object from the 'LogisticRegression' class
-# with inputs (independent variables) contained in the first dataframe
-# and targets (dependent variables) contained in the second dataframe.
-
-# Same as above.
-summary_table = pd.DataFrame(columns = ['Feature name'], data = feature_name)
-summary_table['Coefficients'] = np.transpose(reg.coef_)
-summary_table.index = summary_table.index + 1
-summary_table.loc[0] = ['Intercept', reg.intercept_[0]]
-summary_table = summary_table.sort_index()
-summary_table
-
-# This is a list.
-p_values = reg.p_values
-# We take the result of the newly added method 'p_values' and store it in a variable 'p_values'.
-
-# Add the intercept for completeness.
-p_values = np.append(np.nan, np.array(p_values))
-# We add the value 'NaN' in the beginning of the variable with p-values.
-
-summary_table['p_values'] = p_values
-# In the 'summary_table' dataframe, we add a new column, called 'p_values', containing the values from the 'p_values' variable.
-
-summary_table.to_csv('....../p-values analysis.csv')
-
-# We are going to remove some features, the coefficients for all or almost all of the dummy variables for which,
-# are not statistically significant.
-#-	We select the variables which have less than 0.05 p-value (less than 5% prob of the extreme values)
-#-	We select the variable despite some of the categories not being significant and keep all the dummy variables
-#-	If only one of the categories is significant, while let’s say other 5 or 6 are not significant, we remove the variable
-
-# We do that by specifying another list of dummy variables as reference categories, and a list of variables to remove.
-# Then, we are going to drop the two datasets from the original list of dummy variables.
 
 # Variables
 inputs_train_with_ref_cat = loan_data_inputs_train.loc[: , ['grade:A',
@@ -361,23 +298,9 @@ pickle.dump(reg2, open('pd_model.sav', 'wb'))
 
 ##### PD model validation begins##### PD model validation begins
 ##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
-##### PD model validation begins##### PD model validation begins
 
 
 #First we were creating the ref category for the inputs variable, now we are doing for the test variable
-#Validation is basically testing the model on the test dataset
-#Validation is basically testing the model on the test dataset
-#Validation is basically testing the model on the test dataset
-#Validation is basically testing the model on the test dataset
 #Validation is basically testing the model on the test dataset
 
 inputs_test_with_ref_cat = loan_data_inputs_test.loc[: , ['grade:A',
